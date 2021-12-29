@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://addons/UniversalFade/Fade.gd" type="Script" id=0]
+
+[sub_resource type="Shader" id=5]
+code = "shader_type canvas_item;
+
+uniform vec4 color : hint_color;
+uniform bool smooth_mode = false;
+uniform bool reverse = false;
+uniform float opacity : hint_range(0, 1);
+
+void fragment() {
+	float alpha = texture(TEXTURE, UV).r;
+	if (reverse) {
+		alpha = 1.0 - alpha;
+	}
+	
+	if (smooth_mode) {
+		alpha = mix(0.0, 1.0, clamp(alpha - 1.0 + opacity * 2.0, 0.0, 1.0));
+	} else {
+		alpha = min(ceil(alpha + opacity * 1.00001 - 1.0), 1.0);
+	}
+	COLOR = vec4(color.rgb, alpha);
+}
+"
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = SubResource( 5 )
+shader_param/color = Color( 0, 0, 0, 1 )
+shader_param/smooth_mode = false
+shader_param/reverse = false
+shader_param/opacity = 1.0
+
+[sub_resource type="Animation" id=2]
+resource_name = "FadeIn"
+tracks/0/type = "value"
+tracks/0/path = NodePath("TextureRect:material:shader_param/opacity")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1.0, 0.0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "FadeOut"
+tracks/0/type = "value"
+tracks/0/path = NodePath("TextureRect:material:shader_param/opacity")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+
+[node name="Fade" type="CanvasLayer"]
+layer = 100
+script = ExtResource( 0 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource( 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/FadeIn = SubResource( 2 )
+anims/FadeOut = SubResource( 3 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_fade_finished"]
