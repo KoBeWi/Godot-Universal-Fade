@@ -37,6 +37,12 @@ Fade methods come with a few parameters. They are:
 - `reverse` - if true, pattern will be reversed
 - `smooth` - if true, the pattern will have smoothed alpha
 
+Example call with all arguments:
+
+```GDScript
+Fade.fade_out(1, Color.blue, "Diamond", false, false)
+```
+
 ## Patterns
 
 Probably the most cool thing about this node. You can use patterns to spice up your fading effect. Here's example pattern:
