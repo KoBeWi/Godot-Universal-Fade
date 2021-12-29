@@ -32,6 +32,7 @@ You can pause the game while fading. The Fade node will process normally during 
 
 Fade methods come with a few parameters. They are:
 
+- `time` - time of the effect in seconds
 - `color` - color to fade to. By default it's black
 - `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade` folder. For argument, your provide the part of the name that comes after "Pattern", e.g. "Diamond" to use "PatternDiamond.png"
 - `reverse` - if true, pattern will be reversed. Defaults to false
@@ -42,6 +43,8 @@ Example call with all arguments:
 ```GDScript
 Fade.fade_out(1, Color.blue, "Diamond", false, false)
 ```
+
+All arguments except time are optional.
 
 ## Patterns
 
