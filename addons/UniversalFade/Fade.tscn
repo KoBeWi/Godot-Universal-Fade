@@ -13,13 +13,13 @@ uniform float opacity : hint_range(0, 1);
 void fragment() {
 	float alpha = texture(TEXTURE, UV).r;
 	if (reverse) {
-		alpha = 1.0 - alpha;
+		alpha = clamp(1.0 - alpha, 0.0, 1.0);
 	}
 	
 	if (smooth_mode) {
 		alpha = mix(0.0, 1.0, clamp(alpha - 1.0 + opacity * 2.0, 0.0, 1.0));
 	} else {
-		alpha = min(ceil(alpha + opacity * 1.00001 - 1.0), 1.0);
+		alpha = clamp(ceil(alpha + opacity * 1.00001 - 1.0), 0.0, 1.0);
 	}
 	COLOR = vec4(color.rgb, alpha);
 }
