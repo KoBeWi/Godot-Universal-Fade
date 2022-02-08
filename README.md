@@ -91,3 +91,8 @@ You can easily add custom patterns to the UniversalFade directory. The included 
 - Swirl (not smoothed)
 
 <img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeSwirlRough.gif" width="320">
+
+___
+You can find all my addons on my [profile page](https://github.com/KoBeWi).
+
+<a href='https://ko-fi.com/W7W7AD4W4' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
