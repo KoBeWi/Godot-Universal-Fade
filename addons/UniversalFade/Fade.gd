@@ -1,19 +1,38 @@
 extends CanvasLayer
 class_name Fade
 
+## Base directory where patterns are located.
+const PATTERN_DIR = "res://addons/UniversalFade/Patterns/"
+
 ## Emitted when the effect finishes.
 signal finished
 
-## Fades out the screen, so it becomes a single color.
+## Fades out the screen, so it becomes a single color. Use the parameters to customize it.
 static func fade_out(time := 1.0, color := Color.BLACK, pattern := "", reverse := false, smooth := false) -> Fade:
 	var fader := _create_fader(color, pattern, reverse, smooth)
 	fader._fade(&"FadeOut", time)
 	return fader
 
-## Fades in the screen, so it's visible again.
+## Fades in the screen, so it's visible again. Use the parameters to customize it.
 static func fade_in(time := 1.0, color := Color.BLACK, pattern := "", reverse := true, smooth := false) -> Fade:
 	var fader := _create_fader(color, pattern, reverse, smooth)
 	fader._fade(&"FadeIn", time)
+	return fader
+
+## Starts a crossfade effect. It will take snapshot of the current screen and freeze it (visually) until [method crossfade_execute] is called. Use the parameters to customize it.
+static func crossfade_prepare(time := 1.0, pattern := "", reverse := false, smooth := false) -> void:
+	_get_scene_tree_root().set_meta(&"__crossfade__", true)
+	var fader := _create_fader(Color.WHITE, pattern, reverse, smooth)
+	fader.set_meta(&"time", time)
+	_get_scene_tree_root().set_meta(&"__crossfade__", fader)
+
+## Executes the crossfade. [b]Before[/b] calling this method, make sure to call [method crossfade_prepare] [b]and[/b] e.g. change the scene. The screen will fade from the snapshotted image to the new scene.
+static func crossfade_execute() -> Fade:
+	assert(_get_scene_tree_root().has_meta(&"__crossfade__"), "No crossfade prepared. Use Fade.crossfade_prepare() first")
+	var fader := _get_scene_tree_root().get_meta(&"__crossfade__") as Fade
+	_get_scene_tree_root().remove_meta(&"__crossfade__")
+	
+	fader._fade(&"FadeIn", fader.get_meta(&"time"))
 	return fader
 
 static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: bool) -> Fade:
@@ -30,32 +49,37 @@ static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: 
 		if _get_scene_tree_root().has_meta(&"__1px_pattern__"):
 			texture = _get_scene_tree_root().get_meta(&"__1px_pattern__")
 		else:
-			var image := Image.new()
-			image.create(1, 1, false, Image.FORMAT_RGBA8)
+			var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
 			image.fill(Color.WHITE)
 			
 			texture = ImageTexture.create_from_image(image)
 			_get_scene_tree_root().set_meta(&"__1px_pattern__", texture)
 	else:
-		var pattern_path := "res://addons/UniversalFade/Pattern%s.png" % pattern
-		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Invalid pattern name.")
+		var pattern_path := PATTERN_DIR + pattern + ".png"
+		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern, PATTERN_DIR])
 		texture = load(pattern_path)
 	
 	var fader = load("res://addons/UniversalFade/Fade.tscn").instantiate()
-	fader._prepare_fade(color, texture, reverse, smooth)
+	fader._prepare_fade(color, texture, reverse, smooth, _get_scene_tree_root().get_meta(&"__crossfade__", false))
 	_get_scene_tree_root().set_meta(&"__current_fade__", fader)
 	_get_scene_tree_root().add_child(fader)
 	return fader
 
-static func _get_scene_tree_root() -> Node:
-	return Engine.get_main_loop().root as Node
+static func _get_scene_tree_root() -> Viewport:
+	return Engine.get_main_loop().root as Viewport
 
-func _prepare_fade(color: Color, pattern: Texture2D, reverse: bool, smooth: bool):
+func _prepare_fade(color: Color, pattern: Texture2D, reverse: bool, smooth: bool, crossfade: bool):
 	var mat := $TextureRect.material as ShaderMaterial
 	mat.set_shader_parameter(&"color", color)
 	mat.set_shader_parameter(&"reverse", reverse)
 	mat.set_shader_parameter(&"smooth_mode", smooth)
-	$TextureRect.texture = pattern
+	
+	if crossfade:
+		mat.set_shader_parameter(&"use_custom_texture", true)
+		mat.set_shader_parameter(&"custom_texture", pattern)
+		$TextureRect.texture = ImageTexture.create_from_image(_get_scene_tree_root().get_texture().get_image())
+	else:
+		$TextureRect.texture = pattern
 
 func _fade(animation: StringName, time: float):
 	assert(time > 0, "Time must be greater than 0.")

@@ -10,8 +10,17 @@ uniform bool smooth_mode = false;
 uniform bool reverse = false;
 uniform float opacity : hint_range(0, 1) = 1.0;
 
+uniform bool use_custom_texture = false;
+uniform sampler2D custom_texture;
+
 void fragment() {
-	float alpha = texture(TEXTURE, UV).r;
+	float alpha;
+	if (use_custom_texture) {
+	 	alpha = texture(custom_texture, UV).r;
+	} else {
+	 	alpha = texture(TEXTURE, UV).r;
+	}
+	
 	if (reverse) {
 		alpha = clamp(1.0 - alpha, 0.0, 1.0);
 	}
@@ -21,16 +30,22 @@ void fragment() {
 	} else {
 		alpha = clamp(ceil(alpha + opacity * 1.00001 - 1.0), 0.0, 1.0);
 	}
-	COLOR = vec4(color.rgb, alpha);
+
+	if (use_custom_texture) {
+		COLOR = vec4(texture(TEXTURE, UV).rgb, alpha);
+	} else {
+		COLOR = vec4(color.rgb, alpha);
+	}
 }
 "
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = SubResource("5")
-color = Color(0, 0, 0, 1)
-opacity = 1.0
-reverse = false
-smooth_mode = false
+shader_parameter/color = Color(0, 0, 0, 1)
+shader_parameter/opacity = 1.0
+shader_parameter/reverse = false
+shader_parameter/smooth_mode = false
+shader_parameter/use_custom_texture = null
 
 [sub_resource type="Animation" id="2"]
 resource_name = "FadeIn"

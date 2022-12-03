@@ -36,7 +36,7 @@ Fade methods come with a few parameters. They are:
 
 - `time` - time of the effect in seconds. By default it's 1
 - `color` - color to fade to. By default it's black
-- `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade` folder. For argument, your provide the part of the name that comes after "Pattern", e.g. "Diamond" to use "PatternDiamond.png"
+- `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade/Patterns` folder. For argument, your provide the base name of the pattern file, e.g. "Diamond" to use "Diamond.png"
 - `reverse` - if true, pattern will be reversed. Defaults to false for fade out and true for fade in
 - `smooth` - if true, the pattern will have smoothed alpha. Defaults to false
 
@@ -60,11 +60,36 @@ The smooth will smoothen your alpha, i.e. the colors will fade gradually instead
 
 <img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeHorizontalSmooth.gif" width="320"><img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeHorizontalRough.gif" width="320">
 
+## Crossfade
+
+A special type of fade that does both fade in and fade out, interweaving "before" and "after" screens. Example crossfade:
+
+<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeCrossfade.gif" width="320">
+
+You can achieve this effect by using `crossfade_prepare()` and `crossfade_execute()` functions. The former will take "snapshot" of the current screen. It will be frozen until the effect is finished. The second will do the actual crossfade. The idea is that you change the screens (e.g. change scene, make something appear) between these methods.
+
+Example code for changing scene with a crossfade:
+```GDScript
+Fade.crossfade_prepare()
+get_tree().change_scene(new_scene)
+Fade.crossfade_execute()
+```
+
+`crossfade_prepare()` takes the same parameters as other fade methods, except color. `crossfade_execute()` takes no parameters, because the prepare method does all the setup. Example call with all arguments:
+
+```GDScript
+Fade.crossfade_prepare(1, "Diamond", false, false)
+```
+
+Note that crossfade looks better without smoothing.
+
 ## Included patterns
 
 Universal Fade comes with several built-in patterns. Unfortunately I'm not good in making them, so half of them are just simple gradients. The Diamond pattern is kinda borrowed from RPG Maker, please don't tell anyone, thx.
 
 You can easily add custom patterns to the UniversalFade directory. The included patterns are all `1920x1080` in size. The pattern will fit to screen anyways, but you might want to match the proportions, so they don't appear distorted. btw if you made a cool fade pattern and want to contribute it here, open an issue and attach the image. You will be credited if it gets included :)
+
+The addon supports transition effects from RPG Maker XP and any other programs that use grayscale transition effects.
 
 ### List of patterns
 
