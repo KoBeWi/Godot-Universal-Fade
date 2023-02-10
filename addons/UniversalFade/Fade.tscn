@@ -42,17 +42,17 @@ void fragment() {
 [sub_resource type="ShaderMaterial" id="1"]
 shader = SubResource("5")
 shader_parameter/color = Color(0, 0, 0, 1)
-shader_parameter/opacity = 1.0
-shader_parameter/reverse = false
 shader_parameter/smooth_mode = false
-shader_parameter/use_custom_texture = null
+shader_parameter/reverse = false
+shader_parameter/opacity = 1.0
+shader_parameter/use_custom_texture = false
 
 [sub_resource type="Animation" id="2"]
 resource_name = "FadeIn"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("TextureRect:material:opacity")
+tracks/0/path = NodePath("TextureRect:material:shader_parameter/opacity")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -67,7 +67,7 @@ resource_name = "FadeOut"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("TextureRect:material:opacity")
+tracks/0/path = NodePath("TextureRect:material:shader_parameter/opacity")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -95,7 +95,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-ignore_texture_size = true
+expand_mode = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
