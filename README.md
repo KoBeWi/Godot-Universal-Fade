@@ -16,8 +16,6 @@ Fade.fade_in()
 ```
 And it will return to normal.
 
-Note that, while fade can be called anywhere at any time, it will fail if you call it right at the project launch (e.g. in `_ready()` method of your main scene). If you want to fade that early for whatever reason, wait a single frame.
-
 ## How to scene transition
 
 Fading out and in is cool and all, but you probably want to use it for something other than itself. The most common usage is scene transiton. You can use this piece of code:
