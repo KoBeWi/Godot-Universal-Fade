@@ -56,7 +56,7 @@ static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: 
 			_get_scene_tree_root().set_meta(&"__1px_pattern__", texture)
 	else:
 		var pattern_path := PATTERN_DIR + pattern + ".png"
-		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern, PATTERN_DIR])
+		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern_path, PATTERN_DIR])
 		texture = load(pattern_path)
 	
 	var fader = load("res://addons/UniversalFade/Fade.tscn").instantiate()

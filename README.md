@@ -1,4 +1,4 @@
-# <img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/Icon.png" width="64" height="64"> Godot Universal Fade
+# <img src="Media/Icon.png" width="64" height="64"> Godot Universal Fade
 
 Universal Fade does 2 things:
 - fades out
@@ -52,19 +52,19 @@ All arguments are optional.
 
 Probably the most cool thing about this node. You can use patterns to spice up your fading effect. Here's example pattern:
 
-![](https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeDiamondRough.gif)
+![](Media/ReadmeDiamondRough.gif)
 
 Pattern is a gradient of colors ranging from white to black. The node uses a shader effect that fades the colors gradually. When fading out, white color will disappear first. When fading in, black color will disappear first. When you use the `reverse` argument, the order will be reversed. You can achieve the best effect when fade in and fade out use different `reverse`.
 
 The smooth will smoothen your alpha, i.e. the colors will fade gradually instead of being sharp. Here's a comparison between smoothed and non-smoothed fade (same pattern):
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeHorizontalSmooth.gif" width="320"><img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeHorizontalRough.gif" width="320">
+<img src="Media/ReadmeHorizontalSmooth.gif" width="320"><img src="Media/ReadmeHorizontalRough.gif" width="320">
 
 ## Crossfade
 
 A special type of fade that does both fade in and fade out, interweaving "before" and "after" screens. Example crossfade:
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeCrossfade.gif" width="320">
+<img src="Media/ReadmeCrossfade.gif" width="320">
 
 You can achieve this effect by using `crossfade_prepare()` and `crossfade_execute()` functions. The former will take "snapshot" of the current screen. It will be frozen until the effect is finished. The second will do the actual crossfade. The idea is that you change the screens (e.g. change scene, make something appear) between these methods.
 
@@ -89,35 +89,47 @@ Universal Fade comes with several built-in patterns. Unfortunately I'm not good 
 
 You can easily add custom patterns to the UniversalFade directory. The included patterns are all `1920x1080` in size. The pattern will fit to screen anyways, but you might want to match the proportions, so they don't appear distorted. btw if you made a cool fade pattern and want to contribute it here, open an issue and attach the image. You will be credited if it gets included :)
 
-The addon supports transition effects from RPG Maker XP and any other programs that use grayscale transition effects.
-
 ### List of patterns
 
 (I only include either smoothed or non-smoothed preview)
 
 - Diagonal (smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeDiagonalSmooth.gif" width="320">
+<img src="Media/ReadmeDiagonalSmooth.gif" width="320">
 
 - Diamond (not smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeDiamondRough.gif" width="320">
+<img src="Media/ReadmeDiamondRough.gif" width="320">
 
 - GradientHorizontal (smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeHorizontalSmooth.gif" width="320">
+<img src="Media/ReadmeHorizontalSmooth.gif" width="320">
 
 - GradientVertical (smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeVerticalSmooth.gif" width="320">
+<img src="Media/ReadmeVerticalSmooth.gif" width="320">
 
 - Noise (not smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeNoiseRough.gif" width="320">
+<img src="Media/ReadmeNoiseRough.gif" width="320">
 
 - Swirl (not smoothed)
 
-<img src="https://github.com/KoBeWi/Godot-Universal-Fade/blob/master/Media/ReadmeSwirlRough.gif" width="320">
+<img src="Media/ReadmeSwirlRough.gif" width="320">
+
+- Radial (smoothed) - Credit to [@maktoobbgar](https://github.com/maktoobgar)
+
+<img src="Media/ReadmeRadialSmooth.gif" width="320">
+
+### Additional patterns
+
+Some websites where you can find more patterns:
+
+- [Scene Manager Shader Patterns](https://github.com/maktoobgar/scene_manager/tree/main/addons/scene_manager/shader_patterns) - A similar Godot addon that has a different set of patterns.
+- [mgshellc](https://mgshellc.com/tkxpmaterials/transition.html) - Lots of transition patterns for RPG Maker XP.
+- [GDUnlimited](https://www.gdunlimited.net/resources/cat/rpg-maker-vx-ace/transitions) - Some more RPG Maker patterns.
+
+The addon supports transition effects from RPG Maker XP and any other programs that use grayscale transition effects, so it's easy to find more various effects.
 
 ___
 You can find all my addons on my [profile page](https://github.com/KoBeWi).

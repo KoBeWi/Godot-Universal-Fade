@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1nex6wxbe8hf"
-path="res://.godot/imported/Diagonal.png-356ca26798abe0ab8f5ef500742481a3.ctex"
+uid="uid://brhbd8gpogneg"
+path="res://.godot/imported/Radial.png-c51d954895647c767babed6aa1044913.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/UniversalFade/Patterns/Diagonal.png"
-dest_files=["res://.godot/imported/Diagonal.png-356ca26798abe0ab8f5ef500742481a3.ctex"]
+source_file="res://addons/UniversalFade/Patterns/Radial.png"
+dest_files=["res://.godot/imported/Radial.png-c51d954895647c767babed6aa1044913.ctex"]
 
 [params]
 
