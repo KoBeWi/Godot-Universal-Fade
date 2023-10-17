@@ -1,8 +1,20 @@
+## Performs screen transition effect.
 extends CanvasLayer
 class_name Fade
 
-## Base directory where patterns are located.
-const PATTERN_DIR = "res://addons/UniversalFade/Patterns/"
+## The project setting that determines pattern directory.
+const PROJECT_SETTING = "addons/universal_fade/patterns_directory"
+## The default directory for storing patterns.
+const DEFAULT_PATTERN_DIRECTORY = "res://addons/UniversalFade/Patterns"
+
+## Base directory where patterns are located. It's fetched from project setting and uses default if the setting does not exist.
+static var pattern_directory: String
+
+static func _static_init() -> void:
+	if ProjectSettings.has_setting(PROJECT_SETTING):
+		pattern_directory = ProjectSettings.get_setting(PROJECT_SETTING)
+	else:
+		pattern_directory = DEFAULT_PATTERN_DIRECTORY
 
 ## Emitted when the effect finishes.
 signal finished
@@ -55,8 +67,8 @@ static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: 
 			texture = ImageTexture.create_from_image(image)
 			_get_scene_tree_root().set_meta(&"__1px_pattern__", texture)
 	else:
-		var pattern_path := PATTERN_DIR + pattern + ".png"
-		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern_path, PATTERN_DIR])
+		var pattern_path := pattern_directory.path_join(pattern) + ".png"
+		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern, pattern_directory])
 		texture = load(pattern_path)
 	
 	var fader = load("res://addons/UniversalFade/Fade.tscn").instantiate()

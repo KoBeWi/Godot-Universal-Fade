@@ -46,7 +46,7 @@ Example call with all arguments:
 Fade.fade_out(1, Color.BLUE, "Diamond", false, false)
 ```
 
-All arguments are optional.
+All arguments are optional. If you want to use a different patterns directory, modify the `addons/UniversalFade/patterns_directory` project setting.
 
 ## Patterns
 
