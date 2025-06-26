@@ -6,4 +6,4 @@ static func _static_init() -> void:
 	
 	if not ProjectSettings.has_setting(Fade.PROJECT_SETTING):
 		ProjectSettings.set_setting(Fade.PROJECT_SETTING, Fade.DEFAULT_PATTERN_DIRECTORY)
-		ProjectSettings.save()
+	ProjectSettings.set_initial_value(Fade.PROJECT_SETTING, Fade.DEFAULT_PATTERN_DIRECTORY)

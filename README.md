@@ -36,7 +36,7 @@ Fade methods come with a few parameters. They are:
 
 - `time` - time of the effect in seconds. By default it's 1
 - `color` - color to fade to. By default it's black
-- `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade/Patterns` folder. For argument, your provide the base name of the pattern file, e.g. "Diamond" to use "Diamond.png"
+- `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade/Patterns` folder. For argument, your provide the name of the pattern file, e.g. "Diamond" to use "Diamond.png" (if extension is omitted, .png is used by default)
 - `reverse` - if true, pattern will be reversed. Defaults to false for fade out and true for fade in
 - `smooth` - if true, the pattern will have smoothed alpha. Defaults to false
 

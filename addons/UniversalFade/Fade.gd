@@ -67,11 +67,11 @@ static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: 
 			texture = ImageTexture.create_from_image(image)
 			_get_scene_tree_root().set_meta(&"__1px_pattern__", texture)
 	else:
-		var pattern_path := pattern_directory.path_join(pattern) + ".png"
-		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: '%s'. Make sure a PNG file with this name is located in '%s'." % [pattern, pattern_directory])
+		var pattern_path := pattern_directory.path_join(pattern) + ".png" if pattern.get_extension().is_empty() else pattern_directory.path_join(pattern)
+		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: \"%s\". Make sure a file with this name is located in \"%s\"." % [pattern_path.get_file(), pattern_directory])
 		texture = load(pattern_path)
 	
-	var fader = load("res://addons/UniversalFade/Fade.tscn").instantiate()
+	var fader = preload("uid://dh8yln8lji7v2").instantiate()
 	fader._prepare_fade(color, texture, reverse, smooth, _get_scene_tree_root().get_meta(&"__crossfade__", false))
 	_get_scene_tree_root().set_meta(&"__current_fade__", fader)
 	_get_scene_tree_root().add_child(fader)
