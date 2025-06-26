@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dh8yln8lji7v2"]
 
-[ext_resource type="Script" path="res://addons/UniversalFade/Fade.gd" id="0"]
+[ext_resource type="Script" uid="uid://csgdcpfjtnaaa" path="res://addons/UniversalFade/Fade.gd" id="0"]
 
 [sub_resource type="Shader" id="5"]
 code = "shader_type canvas_item;
@@ -14,28 +14,23 @@ uniform bool use_custom_texture = false;
 uniform sampler2D custom_texture;
 
 void fragment() {
-	float alpha;
+	vec4 final_color;
 	if (use_custom_texture) {
-	 	alpha = texture(custom_texture, UV).r;
+	 	final_color = vec4(COLOR.rgb, texture(custom_texture, UV).r);
 	} else {
-	 	alpha = texture(TEXTURE, UV).r;
-	}
-	
-	if (reverse) {
-		alpha = clamp(1.0 - alpha, 0.0, 1.0);
-	}
-	
-	if (smooth_mode) {
-		alpha = mix(0.0, 1.0, clamp(alpha - 1.0 + opacity * 2.0, 0.0, 1.0));
-	} else {
-		alpha = clamp(ceil(alpha + opacity * 1.00001 - 1.0), 0.0, 1.0);
+	 	final_color = vec4(color.rgb, COLOR.r);
 	}
 
-	if (use_custom_texture) {
-		COLOR = vec4(texture(TEXTURE, UV).rgb, alpha);
-	} else {
-		COLOR = vec4(color.rgb, alpha);
+	if (reverse) {
+		final_color.a = clamp(1.0 - final_color.a, 0.0, 1.0);
 	}
+
+	if (smooth_mode) {
+		final_color.a = mix(0.0, 1.0, clamp(final_color.a - 1.0 + opacity * 2.0, 0.0, 1.0));
+	} else {
+		final_color.a = clamp(ceil(final_color.a + opacity * 1.00001 - 1.0), 0.0, 1.0);
+	}
+	COLOR = final_color;
 }
 "
 
@@ -79,8 +74,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_q3e1t"]
 _data = {
-"FadeIn": SubResource("2"),
-"FadeOut": SubResource("3")
+&"FadeIn": SubResource("2"),
+&"FadeOut": SubResource("3")
 }
 
 [node name="Fade" type="CanvasLayer"]
@@ -99,7 +94,7 @@ expand_mode = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_q3e1t")
+&"": SubResource("AnimationLibrary_q3e1t")
 }
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_fade_finished"]
