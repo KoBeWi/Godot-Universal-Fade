@@ -7,6 +7,8 @@ const PROJECT_SETTING = "addons/universal_fade/patterns_directory"
 ## The default directory for storing patterns.
 const DEFAULT_PATTERN_DIRECTORY = "res://addons/UniversalFade/Patterns"
 
+static var _fader_scene: PackedScene
+
 ## Base directory where patterns are located. It's fetched from project setting and uses default if the setting does not exist.
 static var pattern_directory: String
 
@@ -71,7 +73,10 @@ static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: 
 		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: \"%s\". Make sure a file with this name is located in \"%s\"." % [pattern_path.get_file(), pattern_directory])
 		texture = load(pattern_path)
 	
-	var fader = preload("uid://dh8yln8lji7v2").instantiate()
+	if not _fader_scene:
+		_fader_scene = load("uid://dh8yln8lji7v2")
+	
+	var fader: Fade = _fader_scene.instantiate()
 	fader._prepare_fade(color, texture, reverse, smooth, _get_scene_tree_root().get_meta(&"__crossfade__", false))
 	_get_scene_tree_root().set_meta(&"__current_fade__", fader)
 	_get_scene_tree_root().add_child(fader)
