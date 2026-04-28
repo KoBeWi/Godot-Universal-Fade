@@ -1,8 +1,8 @@
 # <img src="Media/Icon.png" width="64" height="64"> Godot Universal Fade
 
 Universal Fade does 2 things:
-- fades out
-- fades in
+- Fades out.
+- Fades in.
 
 That's it. You can use it however you need and easily so. To fade out, you do:
 ```GDScript
@@ -34,23 +34,23 @@ You can pause the game while fading. The Fade node will process normally during 
 
 Fade methods come with a few parameters. They are:
 
-- `time` - time of the effect in seconds. By default it's 1
-- `color` - color to fade to. By default it's black
-- `pattern` - pattern used for the effect. See "Patterns" section. If empty string is passed (default), there will be no pattern. The patterns are located in `addons/UniversalFade/Patterns` folder. For argument, your provide the name of the pattern file, e.g. "Diamond" to use "Diamond.png" (if extension is omitted, .png is used by default)
-- `reverse` - if true, pattern will be reversed. Defaults to false for fade out and true for fade in
-- `smooth` - if true, the pattern will have smoothed alpha. Defaults to false
+- **time**: Time of the effect in seconds. By default it's 1.
+- **color**: Color to fade to. By default it's black.
+- **pattern**: Pattern used for the effect. See "Patterns" section. If `null` is passed (default), there will be no pattern. The default patterns are located in `addons/UniversalFade/Patterns` folder. You can drop a pattern texture into your script while holding Ctrl to preload the texture.
+- **reverse**: If `true`, pattern will be reversed. Defaults to false for fade out and true for fade in
+- **smooth**: If `true`, the pattern will have smoothed alpha. Defaults to false
 
 Example call with all arguments:
 
 ```GDScript
-Fade.fade_out(1, Color.BLUE, "Diamond", false, false)
+Fade.fade_out(1, Color.BLUE, preload("uid://sal52o0d7t5p"), false, false) # The UID corresponds to the Diamond pattern.
 ```
 
-All arguments are optional. If you want to use a different patterns directory, modify the `addons/universal_fade/patterns_directory` project setting.
+All arguments are optional.
 
 ## Patterns
 
-Probably the most cool thing about this node. You can use patterns to spice up your fading effect. Here's example pattern:
+Probably the most cool thing about this class. You can use patterns to spice up your fading effect. Here's example pattern:
 
 ![](Media/ReadmeDiamondRough.gif)
 
@@ -66,7 +66,7 @@ A special type of fade that does both fade in and fade out, interweaving "before
 
 <img src="Media/ReadmeCrossfade.gif" width="320">
 
-You can achieve this effect by using `crossfade_prepare()` and `crossfade_execute()` functions. The former will take "snapshot" of the current screen. It will be frozen until the effect is finished. The second will do the actual crossfade. The idea is that you change the screens (e.g. change scene, make something appear) between these methods.
+You can achieve this effect by using `crossfade_prepare()` and `crossfade_execute()` functions. The former will take a snapshot of the current screen. It will be frozen until the effect is finished. The second will do the actual crossfade. The idea is that you change the screens (e.g. change scene, make something appear) in between these methods.
 
 Example code for changing scene with a crossfade:
 ```GDScript
@@ -78,10 +78,8 @@ Fade.crossfade_execute()
 `crossfade_prepare()` takes the same parameters as other fade methods, except color. `crossfade_execute()` takes no parameters, because the prepare method does all the setup. Example call with all arguments:
 
 ```GDScript
-Fade.crossfade_prepare(1, "Diamond", false, false)
+Fade.crossfade_prepare(1, preload("uid://sal52o0d7t5p"), false, false)
 ```
-
-Note that crossfade looks better without smoothing.
 
 ## Included patterns
 
