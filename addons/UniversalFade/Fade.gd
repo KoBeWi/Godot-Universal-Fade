@@ -1,92 +1,81 @@
 ## Performs screen transition effect.
-extends CanvasLayer
-class_name Fade
-
-## The project setting that determines pattern directory.
-const PROJECT_SETTING = "addons/universal_fade/patterns_directory"
-## The default directory for storing patterns.
-const DEFAULT_PATTERN_DIRECTORY = "res://addons/UniversalFade/Patterns"
+class_name Fade extends CanvasLayer
 
 static var _fader_scene: PackedScene
+static var _1px_pattern: Texture2D
 
-## Base directory where patterns are located. It's fetched from project setting and uses default if the setting does not exist.
-static var pattern_directory: String
+static var _current_fade: Fade
 
-static func _static_init() -> void:
-	if ProjectSettings.has_setting(PROJECT_SETTING):
-		pattern_directory = ProjectSettings.get_setting(PROJECT_SETTING)
-	else:
-		pattern_directory = DEFAULT_PATTERN_DIRECTORY
+var _crossfade_time: float = -1
 
 ## Emitted when the effect finishes.
 signal finished
 
-## Fades out the screen, so it becomes a single color. Use the parameters to customize it.
-static func fade_out(time := 1.0, color := Color.BLACK, pattern := "", reverse := false, smooth := false) -> Fade:
-	var fader := _create_fader(color, pattern, reverse, smooth)
-	fader._fade(&"FadeOut", time)
-	return fader
-
-## Fades in the screen, so it's visible again. Use the parameters to customize it.
-static func fade_in(time := 1.0, color := Color.BLACK, pattern := "", reverse := true, smooth := false) -> Fade:
-	var fader := _create_fader(color, pattern, reverse, smooth)
-	fader._fade(&"FadeIn", time)
-	return fader
-
-## Starts a crossfade effect. It will take snapshot of the current screen and freeze it (visually) until [method crossfade_execute] is called. Use the parameters to customize it.
-static func crossfade_prepare(time := 1.0, pattern := "", reverse := false, smooth := false) -> void:
-	_get_scene_tree_root().set_meta(&"__crossfade__", true)
-	var fader := _create_fader(Color.WHITE, pattern, reverse, smooth)
-	fader.set_meta(&"time", time)
-	_get_scene_tree_root().set_meta(&"__crossfade__", fader)
-
-## Executes the crossfade. [b]Before[/b] calling this method, make sure to call [method crossfade_prepare] [b]and[/b] e.g. change the scene. The screen will fade from the snapshotted image to the new scene.
-static func crossfade_execute() -> Fade:
-	assert(_get_scene_tree_root().has_meta(&"__crossfade__"), "No crossfade prepared. Use Fade.crossfade_prepare() first")
-	var fader := _get_scene_tree_root().get_meta(&"__crossfade__") as Fade
-	_get_scene_tree_root().remove_meta(&"__crossfade__")
+## Fades out the screen, so it becomes a single color over [param time] seconds. [param color] is the target color, [param reverse] reverses the pattern colors, while [param smooth] smoothens the pattern's alpha (instead of doing hard cut-off).
+## [br][br][param pattern] is the pattern texture. If not specified, a simple fade effect will be performed, ignoring [param smooth] and [param reverse].
+## [br][br][b]Note:[/b] Executing another fade effect before the previous one has finished will cancel the old fade.
+static func fade_out(time := 1.0, color := Color.BLACK, pattern: Texture2D = null, reverse := false, smooth := false) -> Fade:
+	assert(time > 0, "Fade time must be greater than 0.")
 	
-	fader._fade(&"FadeIn", fader.get_meta(&"time"))
+	var fader := _create_fader(color, pattern, reverse, smooth)
+	fader._fade(time, true)
 	return fader
 
-static func _create_fader(color: Color, pattern: String, reverse: bool, smooth: bool) -> Fade:
-	if _get_scene_tree_root().has_meta(&"__current_fade__"):
-		var old = _get_scene_tree_root().get_meta(&"__current_fade__")
-		if is_instance_valid(old):
-			old.queue_free()
+## Fades in the screen, so it's visible again. The parameters are the same as in [method fade_out].
+static func fade_in(time := 1.0, color := Color.BLACK, pattern: Texture2D = null, reverse := true, smooth := false) -> Fade:
+	assert(time > 0, "Fade time must be greater than 0.")
+	
+	var fader := _create_fader(color, pattern, reverse, smooth)
+	fader._fade(time, false)
+	return fader
+
+## Prepares a crossfade effect. It will take snapshot of the current screen and freeze it (visually) until [method crossfade_execute] is called. The parameters are the same as in [method fade_out].
+static func crossfade_prepare(time := 1.0, pattern: Texture2D = null, reverse := false, smooth := false) -> void:
+	assert(time > 0, "Fade time must be greater than 0.")
+	
+	var fader := _create_fader(Color.WHITE, pattern, reverse, smooth, true)
+	fader._crossfade_time = time
+
+## Executes the crossfade. [b]Before[/b] calling this method, make sure to call [method crossfade_prepare] [b]and[/b] e.g. change the scene. The screen will fade from the snapshotted image to the new scene, using the prepared parameters.
+static func crossfade_execute() -> Fade:
+	assert(is_instance_valid(_current_fade) and _current_fade._crossfade_time > 0, "No crossfade prepared. Use Fade.crossfade_prepare() first.")
+	
+	_current_fade._fade(_current_fade._crossfade_time, false)
+	return _current_fade
+
+static func _create_fader(color: Color, pattern: Texture2D, reverse: bool, smooth: bool, crossfade := false) -> Fade:
+	if is_instance_valid(_current_fade):
+		_current_fade.queue_free()
 	
 	var texture: Texture2D
-	if pattern.is_empty():
+	if pattern:
+		texture = pattern
+	else:
 		smooth = true
 		reverse = false
 		
-		if _get_scene_tree_root().has_meta(&"__1px_pattern__"):
-			texture = _get_scene_tree_root().get_meta(&"__1px_pattern__")
-		else:
+		if not _1px_pattern:
 			var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
 			image.fill(Color.WHITE)
-			
-			texture = ImageTexture.create_from_image(image)
-			_get_scene_tree_root().set_meta(&"__1px_pattern__", texture)
-	else:
-		var pattern_path := pattern_directory.path_join(pattern) + ".png" if pattern.get_extension().is_empty() else pattern_directory.path_join(pattern)
-		assert(ResourceLoader.exists(pattern_path, "Texture2D"), "Pattern not found: \"%s\". Make sure a file with this name is located in \"%s\"." % [pattern_path.get_file(), pattern_directory])
-		texture = load(pattern_path)
+			_1px_pattern = ImageTexture.create_from_image(image)
+		
+		texture = _1px_pattern
 	
 	if not _fader_scene:
 		_fader_scene = load("uid://dh8yln8lji7v2")
 	
-	var fader: Fade = _fader_scene.instantiate()
-	fader._prepare_fade(color, texture, reverse, smooth, _get_scene_tree_root().get_meta(&"__crossfade__", false))
-	_get_scene_tree_root().set_meta(&"__current_fade__", fader)
-	_get_scene_tree_root().add_child(fader)
-	return fader
+	_current_fade = _fader_scene.instantiate()
+	_current_fade._prepare_fade(color, texture, reverse, smooth, crossfade)
+	_get_scene_tree_root().add_child(_current_fade)
+	return _current_fade
 
-static func _get_scene_tree_root() -> Viewport:
-	return Engine.get_main_loop().root as Viewport
+static func _get_scene_tree_root() -> Node:
+	return Engine.get_main_loop().root as Node
 
 func _prepare_fade(color: Color, pattern: Texture2D, reverse: bool, smooth: bool, crossfade: bool):
-	var mat := $TextureRect.material as ShaderMaterial
+	var texture_rect: TextureRect = $TextureRect
+	
+	var mat: ShaderMaterial = texture_rect.material
 	mat.set_shader_parameter(&"color", color)
 	mat.set_shader_parameter(&"reverse", reverse)
 	mat.set_shader_parameter(&"smooth_mode", smooth)
@@ -94,18 +83,19 @@ func _prepare_fade(color: Color, pattern: Texture2D, reverse: bool, smooth: bool
 	if crossfade:
 		mat.set_shader_parameter(&"use_custom_texture", true)
 		mat.set_shader_parameter(&"custom_texture", pattern)
-		$TextureRect.texture = ImageTexture.create_from_image(_get_scene_tree_root().get_texture().get_image())
+		texture_rect.texture = ImageTexture.create_from_image(_get_scene_tree_root().get_texture().get_image())
 	else:
-		$TextureRect.texture = pattern
+		texture_rect.texture = pattern
 
-func _fade(animation: StringName, time: float):
-	assert(time > 0, "Time must be greater than 0.")
-	var player := $AnimationPlayer as AnimationPlayer
-	player.play(animation, -1, 1.0 / time)
-	player.advance(0)
+func _fade(time: float, out: bool):
+	var target := 1.0 if out else 0.0
+	
+	var tween := create_tween()
+	tween.tween_property($TextureRect.material, ^"shader_parameter/opacity", target, time).from(1.0 - target)
+	tween.tween_callback(_fade_finished.bind(out))
 
-func _fade_finished(anim_name: StringName) -> void:
+func _fade_finished(out: bool) -> void:
 	finished.emit()
 	
-	if anim_name == &"FadeIn":
+	if not out:
 		queue_free()
